@@ -109,7 +109,7 @@ services:
     #   mode: global
 
   grafana:
-    image: grafana/grafana
+    build: grafana/.
     user: "104"
     depends_on:
       - prometheus
@@ -117,7 +117,6 @@ services:
       - 3000:3000
     volumes:
       - grafana_data:/var/lib/grafana
-      - "./grafana/provisioning/:/grafana/provisioning/"
     env_file:
       - ./grafana/config.monitoring
     networks:
