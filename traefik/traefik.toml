@@ -1,0 +1,55 @@
+# defaultEntryPoints must be at the top because it should not be in any table below
+defaultEntryPoints = ["http", "https"]
+
+debug = true
+logLevel = "TRACE"
+
+[web]
+# Port for the status page
+address = ":8080"
+
+# Entrypoints, http and https
+[entryPoints]
+
+# http should be redirected to https
+[entryPoints.http]
+address = ":80"
+# [entryPoints.http.redirect]
+# entryPoint = "https"
+
+# https is the default
+[entryPoints.https]
+address = ":443"
+
+[entryPoints.https.tls]
+
+
+# Enable ACME (Let's Encrypt): automatic SSL
+# [acme]
+
+# Uncomment the line to use Let's Encrypt's staging server, otherwise for prod
+# caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+# # Email address used for registration
+# email = "takumi.watanabe@technossus.com"
+
+# # Entrypoint to proxy acme apply certificates to
+# entryPoint = "https"
+
+# # Enablle certificate generation on frontends host rules
+# onHostRule = true
+
+# # Display debug log messages from the acme client library
+# acmeLogging = true
+
+
+# # Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
+# [acme.httpChallenge]
+# entryPoint = "http"
+
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+#domain = "takumilab.io"
+watch = true
+exposedbydefault = false

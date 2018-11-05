@@ -1,0 +1,32 @@
+version: '3.2'
+
+services:
+  traefik:
+    build: .
+    # command: --web --web.metrics.prometheus --web.metrics.prometheus.buckets="0.1,0.3,1.2,5.0" --docker --docker.domain=docker.localhost --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "443:443"
+      # - "8080:8080"
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - reverseproxy
+      # - prometheus
+    cap_drop:
+      - all
+    cap_add:
+      - net_bind_service
+    labels:
+        - "traefik.port=8080"
+        - "traefik.enable=true"
+        - "traefik.backend=traefik"
+        - "traefik.frontend.rule=Host:traefik.${DOMAIN_NAME}"
+
+networks:
+  reverseproxy:
+    driver: bridge
+  # prometheus:
+  #   external:
+  #     name: prometheus_back-tier

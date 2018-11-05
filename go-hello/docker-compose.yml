@@ -1,0 +1,19 @@
+version: '3'
+services:
+    go-hello:
+        build: .
+        image: codebadger/go-hello
+        networks:
+            - reverseproxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.backend=go-hello"
+            - "traefik.frontend.rule=Host:go-hello.${DOMAIN_NAME}"
+            - "traefik.docker.network=traefik_reverseproxy"
+        ports:
+            - "3003:3000"
+
+networks:
+    reverseproxy:
+        external:
+            name: traefik_reverseproxy
