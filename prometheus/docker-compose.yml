@@ -1,0 +1,132 @@
+version: '3'
+
+volumes:
+    prometheus_data: {}
+    grafana_data: {}
+
+networks:
+  front-tier:
+  back-tier:
+  reverseproxy:
+    external:
+      name: traefik_reverseproxy
+
+services:
+  prometheus:
+    # image: prom/prometheus:v2.1.0
+    build: .
+    volumes:
+      # - ./prometheus/prometheus.yml :/root/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    stdin_open: true
+    tty: true
+    links:
+      - cadvisor:cadvisor
+      # - alertmanager:alertmanager
+    depends_on:
+      - cadvisor
+    networks:
+      - back-tier
+      - reverseproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=prometheus"
+      - "traefik.frontend.rule=Host:prom.${DOMAIN_NAME}"
+      - "traefik.docker.network=traefik_reverseproxy"
+    restart: always
+#    deploy:
+#      placement:
+#        constraints:
+#          - node.hostname == ${HOSTNAME}
+
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: 
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    networks:
+      - back-tier
+      - reverseproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=node-exporter"
+      - "traefik.frontend.rule=Host:node.${DOMAIN_NAME}"
+      - "traefik.docker.network=traefik_reverseproxy"
+    restart: always
+    # deploy:
+    #   mode: global
+
+  # alertmanager:
+  #   image: prom/alertmanager
+  #   ports:
+  #     - 9093:9093
+  #   volumes:
+  #     - "./alertmanager/:/alertmanager/"
+  #   networks:
+  #     - back-tier
+  #   restart: always
+  #   command:
+  #     - '--config.file=/alertmanager/config.yml'
+  #     - '--storage.path=/alertmanager'
+#    deploy:
+#      placement:
+#        constraints:
+#          - node.hostname == ${HOSTNAME}
+  cadvisor:
+    image: google/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8081:8080
+    networks:
+      - back-tier
+      - reverseproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=cadvisor"
+      - "traefik.frontend.rule=Host:cadvisor.${DOMAIN_NAME}"
+      - "traefik.docker.network=traefik_reverseproxy"
+    restart: always
+    # deploy:
+    #   mode: global
+
+  grafana:
+    image: grafana/grafana
+    user: "104"
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - "./grafana/provisioning/:/grafana/provisioning/"
+    env_file:
+      - ./grafana/config.monitoring
+    networks:
+      - back-tier
+      - front-tier
+      - reverseproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=grafana"
+      - "traefik.frontend.rule=Host:grafana.${DOMAIN_NAME}"
+      - "traefik.docker.network=traefik_reverseproxy"
+    restart: always
