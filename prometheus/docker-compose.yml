@@ -5,7 +5,6 @@ volumes:
     grafana_data: {}
 
 networks:
-  # front-tier:
   back-tier:
   reverseproxy:
     external:
@@ -13,10 +12,8 @@ networks:
 
 services:
   prometheus:
-    # image: prom/prometheus:v2.1.0
     build: .
     volumes:
-      # - ./prometheus/prometheus.yml :/root/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -121,7 +118,6 @@ services:
       - ./grafana/config.monitoring
     networks:
       - back-tier
-      # - front-tier
       - reverseproxy
     labels:
       - "traefik.enable=true"
