@@ -4,6 +4,16 @@ global:
   external_labels:
     monitor: "prom-monitor"
 
+rule_files:
+  - 'alert.rules'
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets:
+      - "alertmanager:9093"
+
 scrape_configs:
   - job_name: "prometheus"
     scrape_interval: 5s

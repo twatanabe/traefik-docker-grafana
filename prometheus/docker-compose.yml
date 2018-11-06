@@ -26,7 +26,7 @@ services:
     tty: true
     links:
       - cadvisor:cadvisor
-      # - alertmanager:alertmanager
+      - alertmanager:alertmanager
     depends_on:
       - cadvisor
     networks:
@@ -41,7 +41,7 @@ services:
 #    deploy:
 #      placement:
 #        constraints:
-#          - node.hostname == ${HOSTNAME}
+#          - node.hostname == ${DOMAIN_NAME}
 
   node-exporter:
     image: prom/node-exporter
@@ -68,22 +68,30 @@ services:
     # deploy:
     #   mode: global
 
-  # alertmanager:
-  #   image: prom/alertmanager
-  #   ports:
-  #     - 9093:9093
-  #   volumes:
-  #     - "./alertmanager/:/alertmanager/"
-  #   networks:
-  #     - back-tier
-  #   restart: always
-  #   command:
-  #     - '--config.file=/alertmanager/config.yml'
-  #     - '--storage.path=/alertmanager'
-#    deploy:
-#      placement:
-#        constraints:
-#          - node.hostname == ${HOSTNAME}
+  alertmanager:
+    # image: prom/alertmanager
+    build: alertmanager/.
+    ports:
+      - 9093:9093
+    # volumes:
+    #   - "./alertmanager/:/alertmanager/"
+    networks:
+      - back-tier
+      - reverseproxy
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=alert"
+      - "traefik.frontend.rule=Host:alert.${DOMAIN_NAME}"
+      - "traefik.docker.network=traefik_reverseproxy"
+  #  deploy:
+  #    placement:
+  #      constraints:
+  #        - node.hostname == ${HOSTNAME}
+
   cadvisor:
     image: google/cadvisor
     volumes:
