@@ -5,7 +5,7 @@ volumes:
     grafana_data: {}
 
 networks:
-  front-tier:
+  # front-tier:
   back-tier:
   reverseproxy:
     external:
@@ -121,7 +121,7 @@ services:
       - ./grafana/config.monitoring
     networks:
       - back-tier
-      - front-tier
+      # - front-tier
       - reverseproxy
     labels:
       - "traefik.enable=true"
