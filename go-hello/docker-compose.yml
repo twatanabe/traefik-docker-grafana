@@ -10,8 +10,6 @@ services:
             - "traefik.backend=go-hello"
             - "traefik.frontend.rule=Host:go-hello.${DOMAIN_NAME}"
             - "traefik.docker.network=traefik_reverseproxy"
-        ports:
-            - "3003:3000"
 
 networks:
     reverseproxy:
