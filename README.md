@@ -1,6 +1,6 @@
 ### Traefik Docker Grafana
 
-Group of container recepies designed to structure reverse proxy network web apps including OS and container monitoring services.
+Group of container recepies designed to structure reverse proxy network web apps including OS and container monitoring services. Fully deploying this project allows globally accessable web applications to run with a single command.
 - [Traefik](https://traefik.io/) 1.7.4-alpine
 - Hello Go test page
 - [Grafana](https://grafana.com/grafana)
