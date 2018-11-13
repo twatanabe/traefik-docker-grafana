@@ -11,7 +11,7 @@ Group of container recepies designed to structure reverse proxy network web apps
 ## Pre-requirements
 - Docker Machine, Docker Compose
 - Cloud host on Azure or Droplet
-- Global domain with wild-card routing
+- Global domain with wildcard routing
 
 ## Features
 - Reverse Proxy networking empowerd by Traefik with Let's Encrypt HTTPS security.
