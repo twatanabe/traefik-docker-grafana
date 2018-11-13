@@ -24,6 +24,6 @@ Group of container recepies designed to structure reverse proxy network web apps
 
 ![alt text](https://github.com/code-badger/traefik-docker-grafana/blob/master/image.png)
 
-### Grafana Dashboard
+### grafana.domain.com
 
 ![alt text](https://github.com/code-badger/traefik-docker-grafana/blob/master/grafana.jpg)
