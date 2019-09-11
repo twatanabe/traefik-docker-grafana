@@ -31,7 +31,7 @@ address = ":443"
 # caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
 
 # # Email address used for registration
-# email = "takumi.watanabe@technossus.com"
+# email = "sample@email.com"
 
 # # Entrypoint to proxy acme apply certificates to
 # entryPoint = "https"
@@ -50,6 +50,5 @@ address = ":443"
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
-#domain = "takumilab.io"
 watch = true
 exposedbydefault = false
